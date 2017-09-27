@@ -38,3 +38,4 @@ References
 .. [Wu2014] X. Wu, J. Huang, W. Cai, M. Jaroniec, "Force field for ZIF-8 flexible frameworks: atomistic simulation of adsorption, diffusion of pure gases as CH4 , H2 , CO2 and N2," RSC Adv. 4 (2014) 16503–16511. doi:10.1039/C4RA00664J.
 .. [Krokidas2015] P. Krokidas, M. Castier, S. Moncho, E. Brothers, and I. G. Economou, "Molecular Simulation Studies of the Diffusion of Methane, Ethane, Propane, and Propylene in ZIF-8," J. Phys. Chem. C, vol. 119, no. 48, pp. 27028–27037, 2015.
 .. [Park2006] K. S. Park, Z. Ni, A. P. Côté, J. Y. Choi, R. Huang, F. J. Uribe-Romo, H. K. Chae, M. O’Keeffe, and O. M. Yaghi, "Exceptional chemical and thermal stability of zeolitic imidazolate frameworks," PNAS, vol. 103, no. 27, pp. 10186–10191, 2006.
+
