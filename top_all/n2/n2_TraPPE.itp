@@ -1,0 +1,26 @@
+; TraPPE N2 topology with virtual site
+
+[ moleculetype ]
+; name  nrexcl
+N2      2
+
+[ atoms ]
+;   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB
+     1       N_n2      1     N2     N1      1    -0.482      14.007
+     2       N_n2      1     N2     N2      1    -0.482      14.007
+     3       M_n2      1     N2     M       1     0.964      0.0000
+
+[ constraints ]
+; ai  aj  funct length_A
+   1   2   1    0.1100
+
+[ virtual_sites2 ]
+; site  ai  aj  funct   a
+     3   1   2      1   0.5000      ; right in the middle
+
+[ exclusions ]
+1   2   3
+2   1   3
+3   1   2
+
+; END of n2_TrapPPE.itp

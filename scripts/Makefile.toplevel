@@ -1,0 +1,22 @@
+SUBDIRS := 1_prepare 2_em 3_eq1 4_prod_run
+
+.PHONY: all clean subdirs $(SUBDIRS)
+
+all: subdirs
+
+clean: subdirs
+
+run: subdirs
+
+subdirs: $(SUBDIRS)
+
+2_em: 1_prepare
+
+3_eq1: 2_em
+
+4_prod_run: 3_eq1
+
+
+$(SUBDIRS):
+	$(MAKE) -C $@ $(MAKECMDGOALS)
+

@@ -1,0 +1,91 @@
+--- gmx_spatial.cpp.orig	2017-04-17 23:49:54.283941416 +0700
++++ gmx_spatial.cpp	2017-04-18 18:37:57.455918516 +0700
+@@ -120,8 +120,8 @@
+           "Calculate and apply the divisor for bin occupancies based on atoms/minimal cube size. Set as TRUE for visualization and as FALSE ([TT]-nodiv[tt]) to get accurate counts per frame" },
+         { "-ign",      FALSE, etINT, {&iIGNOREOUTER},
+           "Do not display this number of outer cubes (positive values may reduce boundary speckles; -1 ensures outer surface is visible)" },
+-        /*    { "-cut",      bCUTDOWN, etBOOL, {&bCUTDOWN},*/
+-        /*      "Display a total cube that is of minimal size" }, */
++        { "-cut",      bCUTDOWN, etBOOL, {&bCUTDOWN},
++          "Display a total cube that is of minimal size" },
+         { "-bin",      FALSE, etREAL, {&rBINWIDTH},
+           "Width of the bins (nm)" },
+         { "-nab",      FALSE, etINT, {&iNAB},
+@@ -181,7 +181,13 @@
+     get_index(atoms, ftp2fn_null(efNDX, NFILE, fnm), 1, &nidxp, &indexp, &grpnmp);
+ 
+     /* The first time we read data is a little special */
+-    natoms = read_first_frame(oenv, &status, ftp2fn(efTRX, NFILE, fnm), &fr, flags);
++    read_first_frame(oenv, &status, ftp2fn(efTRX, NFILE, fnm), &fr, flags);
++    natoms = fr.natoms;
++
++    if (!bCUTDOWN)
++    {
++        put_atoms_in_box(ePBC, fr.box, fr.natoms, fr.x);
++    }
+ 
+     /* Memory Allocation */
+     MINBIN[XX] = MAXBIN[XX] = fr.x[0][XX];
+@@ -214,11 +220,22 @@
+             MAXBIN[ZZ] = fr.x[i][ZZ];
+         }
+     }
++    if (!bCUTDOWN)
++    {
++        if (0 < MINBIN[XX]) { MINBIN[XX] = 0; }
++        if (0 < MINBIN[YY]) { MINBIN[YY] = 0; }
++        if (0 < MINBIN[ZZ]) { MINBIN[ZZ] = 0; }
++        if (box[XX][XX] > MAXBIN[XX]) { MAXBIN[XX] = box[XX][XX]; }
++        if (box[YY][YY] > MAXBIN[YY]) { MAXBIN[YY] = box[YY][YY]; }
++        if (box[ZZ][ZZ] > MAXBIN[ZZ]) { MAXBIN[ZZ] = box[ZZ][ZZ]; }
++    }
+     for (i = ZZ; i >= XX; --i)
+     {
++        printf("Initial MINBIN[%d]=%g, MAXBIN[%d]=%g\n", i, MINBIN[i], i, MAXBIN[i]);
+         MAXBIN[i]  = (std::ceil((MAXBIN[i]-MINBIN[i])/rBINWIDTH)+iNAB)*rBINWIDTH+MINBIN[i];
+         MINBIN[i] -= iNAB*rBINWIDTH;
+         nbin[i]    = static_cast<int>(std::ceil((MAXBIN[i]-MINBIN[i])/rBINWIDTH));
++        printf("Final MINBIN[%d]=%g, MAXBIN[%d]=%g, nbin[%d]=%d\n", i, MINBIN[i], i, MAXBIN[i], i, nbin[i]);
+     }
+     snew(bin, nbin[XX]);
+     for (i = 0; i < nbin[XX]; ++i)
+@@ -250,6 +267,11 @@
+             set_pbc(&pbc, ePBC, box_pbc);
+         }
+ 
++        if (!bCUTDOWN)
++        {
++            put_atoms_in_box(ePBC, fr.box, fr.natoms, fr.x);
++        }
++
+         for (i = 0; i < nidx; i++)
+         {
+             if (fr.x[index[i]][XX] < MINBIN[XX] || fr.x[index[i]][XX] > MAXBIN[XX] ||
+@@ -303,10 +325,23 @@
+ 
+     if (!bCUTDOWN)
+     {
+-        minx = miny = minz = 0;
+-        maxx = nbin[XX];
+-        maxy = nbin[YY];
+-        maxz = nbin[ZZ];
++        /* add box corners as min/max data points */
++        x = static_cast<int>(std::ceil((0.0-MINBIN[XX])/rBINWIDTH));
++        y = static_cast<int>(std::ceil((0.0-MINBIN[YY])/rBINWIDTH));
++        z = static_cast<int>(std::ceil((0.0-MINBIN[ZZ])/rBINWIDTH));
++        if (x < minx) { minx = x; }
++        if (y < miny) { miny = y; }
++        if (z < minz) { minz = z; }
++
++        x = static_cast<int>(std::ceil((box[XX][XX]-MINBIN[XX])/rBINWIDTH));
++        y = static_cast<int>(std::ceil((box[YY][YY]-MINBIN[YY])/rBINWIDTH));
++        z = static_cast<int>(std::ceil((box[ZZ][ZZ]-MINBIN[ZZ])/rBINWIDTH));
++        if (x > maxx) { maxx = x; }
++        if (y > maxy) { maxy = y; }
++        if (z > maxz) { maxz = z; }
++        printf("box: %g %g %g\n",box[XX][XX],box[YY][YY],box[ZZ][ZZ]);
++        printf("minx, miny, minz: %d %d %d\n", minx, miny, minz);
++        printf("maxx, maxy, maxz: %d %d %d\n", maxx, maxy, maxz);
+     }
+ 
+     /* OUTPUT */

@@ -1,0 +1,58 @@
+; VARIOUS PREPROCESSING OPTIONS
+include                  = -I../top
+define                   = 
+
+; RUN CONTROL PARAMETERS
+integrator               = steep           ; energy minimization
+nsteps                   = 1000
+emtol                    = 0.1
+emstep                   = 0.01
+
+
+
+; OUTPUT CONTROL OPTIONS
+nstxout                  = 1
+nstvout                  = 0
+nstfout                  = 0
+nstlog                   = 100
+nstcalcenergy            = 1
+nstenergy                = 1
+nstxtcout                = 0
+
+; NEIGHBORSEARCHING PARAMETERS
+cutoff-scheme            = group
+nstlist                  = 0
+ns-type                  = simple
+pbc                      = no              ; in vacuo
+periodic_molecules       = no
+rlist                    = 0
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+coulombtype              = cut-off
+rcoulomb                 = 0
+vdw-type                 = cut-off
+rvdw                     = 0
+
+
+; OPTIONS FOR WEAK COUPLING ALGORITHMS
+tc-grps                  = System
+tau-t                    = 0.5
+ref-t                    = 0.0
+pcoupl                   = No
+
+
+; SIMULATED ANNEALING  
+annealing                =             ; for each group (no/single/periodic) 
+annealing-npoints        =             ; Number of time points to use for specifying annealing in each group
+annealing-time           =             ; List of times at the annealing points for each group
+annealing-temp           =             ; Temp. at each annealing point, for each group.
+
+; GENERATE VELOCITIES FOR STARTUP RUN
+gen-vel                  = yes
+gen-temp                 = 0
+
+; OPTIONS FOR BONDS    
+constraints              = none; h-bonds
+constraint-algorithm     = lincs
+lincs-order              = 6
+lincs-iter               = 2

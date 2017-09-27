@@ -1,0 +1,15 @@
+; TEMPO_GMX.top created by acpype (Rev: 7828) on Wed Jul 20 15:08:38 2016
+
+[ defaults ]
+; nbfunc        comb-rule       gen-pairs       fudgeLJ fudgeQQ
+1               2               yes             0.5     0.8333
+
+#include "atomtypes_TEMPO-vsLP.itp"
+#include "tempo-vsLP.itp"
+
+[ system ]
+ TEMPO-vsLP
+
+[ molecules ]
+; Compound        nmols
+ TEMPO-vsLP       1     

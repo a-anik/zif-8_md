@@ -1,0 +1,53 @@
+.PHONY: clean all
+
+all: rdf_TMP.O1-CO2.C.xvg rdf_ZIF8-TMP.O1-TMP-CO2-CO2.C.xvg rdf_TMP-CO2.C.xvg \
+    hist_dist_ZIF8-TMP.O1.xvg hist_dist_ZIF8-TMP.C4.xvg hist_dist_ZIF8-TMPcom.xvg \
+    hist_gas_mols_cage0.dat errest_gas_mols_cage0.xvg \
+    hist_dist_ZIF8-CO2.C.xvg
+
+traj.xtc:
+	ln -s ../4_prod_run/traj_comp.xtc traj.xtc
+
+topol.tpr:
+	ln -s ../4_prod_run/topol.tpr .
+
+rdf_TMP.O1-CO2.C.xvg: traj.xtc topol.tpr
+	gmx rdf -f -s -ref "resname TMP and name O1" -sel "resname CO2 and name C" -o $@
+
+rdf_ZIF8-TMP.O1-TMP-CO2-CO2.C.xvg: traj.xtc topol.tpr
+	gmx rdf -f -s -ref "resname ZIF" -sel "resname TMP and name O1; resname TMP; resname CO2; resname CO2 and name C" -o $@
+
+rdf_TMP-CO2.C.xvg: traj.xtc topol.tpr
+	gmx rdf -f -s -ref "resname TMP" -sel "resname CO2 and name C" -o $@
+
+dist_ZIF8-TMP.O1-TMP.C4-TMPcom.xvg: traj.xtc topol.tpr
+	gmx pairdist -f -s -normpbc -cutoff 1.0 -ref "resname ZIF" -sel "resname TMP and name O1; resname TMP and name C4; com of resname TMP" -o $@
+
+hist_dist_ZIF8-TMP.O1.xvg: dist_ZIF8-TMP.O1-TMP.C4-TMPcom.xvg
+	../scripts/xvg_column_histogram.py -c 2 -f $< -o $@
+
+hist_dist_ZIF8-TMP.C4.xvg: dist_ZIF8-TMP.O1-TMP.C4-TMPcom.xvg
+	../scripts/xvg_column_histogram.py -c 3 -f $< -o $@
+
+hist_dist_ZIF8-TMPcom.xvg: dist_ZIF8-TMP.O1-TMP.C4-TMPcom.xvg
+	../scripts/xvg_column_histogram.py -c 4 -f $< -o $@
+
+dist_ZIF8-CO2.C.xvg:
+	gmx pairdist -f -s -dt 1 -xvg none -normpbc -cutoff 1.0 -selgrouping res -ref "resname ZIF" -sel "resname CO2 and name C" -o $@
+
+dist_ZIF8-CO2.C_ravel.xvg: dist_ZIF8-CO2.C.xvg
+	cat $< | awk '{$$1=""; print}' | tr -s " " "\n" | sed -e '1,1d' > $@
+
+hist_dist_ZIF8-CO2.C.xvg: dist_ZIF8-CO2.C_ravel.xvg
+	../scripts/xvg_column_histogram.py -c 1 -f $< -o $@
+
+gas_mols_cage0.xvg hist_gas_mols_cage0.dat: traj.xtc
+	../scripts/cnt_gas_in_cage.py -f traj.xtc -s ../prod_run/resout.gro
+
+errest_gas_mols_cage0.xvg: gas_mols_cage0.xvg
+	gmx analyze -f $< -ee $@
+
+clean:
+	-@rm -f *.xvg
+	-@rm -f gas_mols_cage0.xvg hist_gas_mols_cage0.dat .traj*_offsets.npz
+	-@rm -f \#*\#

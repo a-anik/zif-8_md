@@ -1,0 +1,79 @@
+;
+; ZIF-8 atomtypes and bonded params:
+;   X. Wu, J. Huang, W. Cai, M. Jaroniec, 
+;   "Force field for ZIF-8 flexible frameworks: atomistic simulation of adsorption, 
+;    diffusion of pure gases as CH4 , H2 , CO2 and N2,"
+;    RSC Adv. 4 (2014) 16503–16511. doi:10.1039/C4RA00664J.
+;
+; *CHANGES*:
+;  - C3 charge is set to -0.4527 (from -0.4526);
+;  - H3 charge is set to +0.1319 (from 0.1325, 0.1306);
+;
+; *REQUIRED DEFAULTS SECTION*
+;  nbfunc      comb-rule      gen-pairs       fudgeLJ    fudgeQQ
+;  1             2              yes             0.5        0.5
+;
+; adapted to GROMACS by A.V.Anikeenko, 2017
+;   A.M. Sheveleva et. al, 
+;   "Probing Gas Adsorption in Metal–Organic Framework ZIF-8 by EPR of Embedded Nitroxides,"
+;   J. Phys. Chem. C. 121 (2017) 19880–19886. doi:10.1021/acs.jpcc.7b06884.
+;
+
+[ atomtypes ]
+; name1 name2       mass         charge  ptype   sigma     epsilon
+Zn_zif8     Zn      65.3900      0.6918   A      0.2462    0.3292808
+ N_zif8      N      14.0067     -0.3879   A      0.3261    0.1832592
+C1_zif8     C1      12.0110      0.4291   A      0.3431    0.2790728
+C2_zif8     C2      12.0110     -0.0839   A      0.3431    0.2790728
+C3_zif8     C3      12.0110     -0.4527   A      0.3431    0.2790728
+H2_zif8     H2       1.0079      0.1128   A      0.2571    0.1167336
+H3_zif8     H3       1.0079      0.1319   A      0.2571    0.1167336
+
+; bond types            func       b0           kb
+#define gb_zif8_C1-C3      1     0.1492   265265.6000
+#define gb_zif8_C1-N       1     0.1339   408358.4000
+#define gb_zif8_C2-N       1     0.1371   343088.0000
+#define gb_zif8_C2-H2      1     0.0929   307105.6000
+#define gb_zif8_C2-C2      1     0.1346   433462.4000
+#define gb_zif8_C3-H3      1     0.0959   284512.0000
+#define gb_zif8_N-Zn       1     0.1987    71964.8000
+
+; angle types           func     phi0         fc
+#define ga_zif8_N-C1-N     1   112.1700    585.7600
+#define ga_zif8_C3-C1-N    1   123.8900    585.7600
+#define ga_zif8_C2-C2-N    1   108.6700    585.7600
+#define ga_zif8_C2-C2-H2   1   125.6700    418.4000
+#define ga_zif8_H2-C2-N    1   125.6600    418.4000
+#define ga_zif8_C1-C3-H3   1   109.4400    418.4000
+#define ga_zif8_C1-N-C2    1   105.2400    585.7600
+#define ga_zif8_C1-N-Zn    1   127.5000    418.4000
+#define ga_zif8_C2-N-Zn    1   128.0000    292.8800
+#define ga_zif8_N-Zn-N     1   109.4700     87.8640
+#define ga_zif8_H3-C3-H3   1   109.5000    292.8800
+
+; dihedral types               func      phi0        fc    mult
+#define gd_zif8_C1-N-C2-C2        1    180.0000    20.0832  2
+#define gd_zif8_C2-C2-N-Zn        1    180.0000     0.4184  2
+#define gd_zif8_C1-N-C2-H2        1    180.0000    20.0832  2
+#define gd_zif8_H2-C2-N-Zn        1         0.0        0.0  0
+
+#define gd_zif8_H2-C2-C2-H2       1    180.0000    16.7360  2
+#define gd_zif8_H2-C2-C2-N        1    180.0000    16.7360  2
+#define gd_zif8_N-C2-C2-N         1    180.0000    16.7360  2
+
+#define gd_zif8_C2-N-C1-C3        1    180.0000    17.3636  2
+#define gd_zif8_C3-C1-N-Zn        1    180.0000     0.4184  2
+#define gd_zif8_C2-N-C1-N         1    180.0000    20.0832  2
+#define gd_zif8_N-C1-N-Zn         1    180.0000     0.4184  2
+
+#define gd_zif8_H3-C3-C1-N        1         0.0        0.0  0
+#define gd_zif8_C1-N-Zn-N         1         0.0     0.7280  3
+#define gd_zif8_C2-N-Zn-N         1         0.0     0.7280  3
+
+; improper dihedral types      func       phi0       fc    mult
+#define gi_zif8_N-C1-C3-N         4       180.0     4.6024  2
+#define gi_zif8_C2-H2-C2-N        4       180.0     4.6024  2
+#define gi_zif8_C1-N-Zn-C2        4         0.0        0.0  0
+
+; END of atomtypes_ZIF-8_Wu.itp
+

@@ -1,0 +1,17 @@
+; TraPPE atomtypes
+; http://chem-siepmann.oit.umn.edu/siepmann/trappe/index.html
+; J.J. Potoff, and J.I. Siepmann, 
+;  "Vapor-liquid equilibria of mixtures containing alkanes, carbon dioxide and nitrogen" 
+;  AIChE J., 47, 1676-1682 (2001).
+;
+[ atomtypes ]
+; name    bond_type     mass     charge   ptype          sigma      epsilon
+ MCO_co2   MCO_co2      0.000    0.000    A              0.000      0.000
+   O_co2     O_co2      0.000   -0.350    A              0.305      0.6568425
+   C_co2     C_co2      0.000    0.700    A              0.280      0.2244905
+   N_n2      N_n2       0.000   -0.482    A              0.331      0.2993206
+   M_n2      M_n2       0.000    0.964    A              0.000      0.0
+   O_o2      O_o2       0.000   -0.113    A              0.302      0.4074086
+   M_o2      M_o2       0.000    0.226    A              0.000      0.0
+
+; END of atomtypes_TrapPPE.itp

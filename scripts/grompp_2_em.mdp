@@ -1,0 +1,96 @@
+; VARIOUS PREPROCESSING OPTIONS
+include                  = -I../top
+define                   = 
+
+
+; RUN CONTROL PARAMETERS
+integrator               = steep
+dt                       = 0.001
+nsteps                   = 100000
+comm-mode                = Linear
+nstcomm                  = 20
+comm-grps                = 
+
+
+; ENERGY MINIMIZATION OPTIONS
+emtol                    = 100
+emstep                   = 0.001
+
+
+; OUTPUT CONTROL OPTIONS
+nstxout                  = 10
+nstvout                  = 0
+nstfout                  = 0
+nstlog                   = 1000
+nstcalcenergy            = 20
+nstenergy                = 1000
+nstxout-compressed       = 100
+energygrps               = 
+
+
+; NEIGHBORSEARCHING PARAMETERS
+cutoff-scheme            = Verlet
+nstlist                  = 40
+ns_type                  = grid
+pbc                      = xyz
+periodic-molecules       = yes
+verlet-buffer-tolerance  = 0.0001
+rlist                    = 1.4
+
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+coulombtype              = PME
+coulomb-modifier         = 
+rcoulomb                 = 1.4
+vdwtype                  = Cut-off
+vdw-modifier             = 
+rvdw                     = 1.4
+DispCorr                 = EnerPres
+; EWALD/PME/PPPM parameters
+fourierspacing           = 0.12
+pme_order                = 4
+ewald_rtol               = 1e-05
+
+
+; OPTIONS FOR WEAK COUPLING ALGORITHMS
+; Temperature coupling  
+tcoupl                   = v-rescale
+tc-grps                  = System
+tau_t                    = 1.0
+ref_t                    = 300
+; pressure coupling     
+pcoupl                   = no
+pcoupltype               = isotropic
+tau_p                    = 0.5
+compressibility          = 4.5e-5
+ref_p                    = 1.
+refcoord-scaling         = No
+
+
+; GENERATE VELOCITIES FOR STARTUP RUN
+gen-vel                  = yes
+gen-temp                 = 300
+gen-seed                 = 3532
+
+
+; OPTIONS FOR BONDS    
+constraints              = none
+
+
+; ENERGY GROUP EXCLUSIONS
+energygrp-excl           = 
+
+
+; COM PULLING          
+pull                     = no
+
+
+; Free energy variables
+free-energy              = no
+
+
+; Non-equilibrium MD stuff
+acc-grps                 = 
+accelerate               = 
+freezegrps               = 
+freezedim                = 

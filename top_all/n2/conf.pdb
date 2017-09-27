@@ -1,0 +1,7 @@
+TITLE     N2 TraPPE in vacuo
+MODEL        1
+ATOM      1  N1   N2     1      -0.550   0.000   0.000  1.00  0.00            
+ATOM      2  N2   N2     1       0.550   0.000   0.000  1.00  0.00            
+ATOM      3  M    N2     1       0.000   0.000   0.000  1.00  0.00            
+TER
+ENDMDL

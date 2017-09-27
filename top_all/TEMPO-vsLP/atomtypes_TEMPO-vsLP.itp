@@ -1,0 +1,11 @@
+; TEMPO_GMX.top created by acpype (Rev: 7828) on Mon Jul 25 19:33:52 2016
+[ atomtypes ]
+;name         bond_type     mass     charge   ptype   sigma         epsilon       Amb
+ NN_tempo       NN          0.00000  0.00000   A     3.38542e-01   1.09914e+00 ; 1.90  0.2627
+ CT_tempo       CT          0.00000  0.00000   A     3.39967e-01   4.57730e-01 ; 1.91  0.1094
+ ON_tempo       ON          0.00000  0.00000   A     2.98451e-01   1.02299e+00 ; 1.67  0.2445
+ HC_tempo       HC          0.00000  0.00000   A     2.64953e-01   6.56888e-02 ; 1.49  0.0157
+ HN_tempo       HN          0.00000  0.00000   A     2.54797e-01   6.56888e-02 ; 1.43  0.0157
+ LP_tempo       LP          0.00000  0.00000   A     0.00000e+00   0.00000e+00 ; 0.00  0.0000
+
+; END of atomtypes_TEMPO-vsLP.itp

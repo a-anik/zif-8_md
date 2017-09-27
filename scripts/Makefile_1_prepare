@@ -1,0 +1,29 @@
+OUT_STRUCT = confout.gro
+GROMPP_FILES = mdout.mdp topol.tpr
+MDRUN_FILES = traj.trr ener.edr md.log $(OUT_STRUCT) state.cpt state_prev.cpt traj.xtc traj_comp.xtc
+
+.PHONY: clean all
+
+GASFILE = ../gas.mk
+include $(GASFILE)
+
+all: topol.top confout.gro index_energrps.ndx
+
+topol.top: topol.top.tmpl $(GASFILE)
+	cat topol.top.tmpl | sed -e 's/@NMOL/$(NMOL)/g; s/@GAS/$(GAS)/g' > topol.top
+
+confout.gro: 1_zif_with_tempo.gro $(GAS)_centered.pdb
+	gmx insert-molecules -f 1_zif_with_tempo.gro -ci $(GAS)_centered.pdb -o confout.gro -seed 1993 -nmol $(NMOL) -try 1000 -scale 1.0 -rot xyz 2>&1 | tee insert_gas.log
+
+1_zif_with_tempo.gro: start_conf.gro positions.dat TEMPO-vsLP_centered.pdb
+	gmx insert-molecules -f start_conf.gro -ci TEMPO-vsLP_centered.pdb -ip positions.dat -o 1_zif_with_tempo.gro -seed 2 -nmol 1 -try 1000 -scale 1.1 -rot xyz 2>&1 | tee insert_tempo.log
+
+index_energrps.ndx: confout.gro
+	echo "!2\n 4\n name 6 GAS\n q\n" | gmx make_ndx -f confout.gro -o index_energrps.ndx
+
+clean:
+	-@rm -f $(GROMPP_FILES) $(MDRUN_FILES)
+	-@rm -f insert*.log 1_zif_with_tempo.gro
+	-@rm -f topol.top index_energrps.ndx
+	-@rm -f \#*\#
+	-@rm -f energy.xvg res_trajout.xtc rmsd.xvg

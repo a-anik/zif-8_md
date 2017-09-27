@@ -1,0 +1,58 @@
+OUT_STRUCT = confout.gro
+GROMPP_FILES = mdout.mdp topol.tpr
+MDRUN_FILES = traj.trr ener.edr md.log $(OUT_STRUCT) state.cpt state_prev.cpt traj.xtc traj.tng traj_comp.xtc
+
+.PHONY: clean maintainer-clean all run top prune
+
+all: run prune
+
+run: top
+	gmx mdrun -nice 5 -v -c $(OUT_STRUCT)
+
+topol.tpr: grompp.mdp topol.top index_energrps.ndx
+	gmx grompp -maxwarn 2 -n index_energrps.ndx 2>&1 | tee gmx_grompp.log
+
+top: topol.tpr
+
+
+index.ndx: conf.gro
+	echo "q \n" |  gmx make_ndx -f conf.gro 
+
+
+prune: traj_vel_tempo.trr traj_tempo.xtc traj_dt10.xtc traj_last2ns.xtc traj_filter_lowpass200.xtc resout.gro
+	test -s traj_vel_tempo.trr && rm -f traj.trr
+	#rm -f traj_comp.xtc
+	gzip traj_vel_tempo.trr
+
+resout.gro: confout.gro
+	echo 0 | gmx trjconv -f confout.gro -o resout.gro -s -pbc res
+
+traj_vel_tempo.trr:
+	echo 3 | gmx trjconv -f traj.trr -s -o traj_vel_tempo.trr
+
+traj_tempo.xtc:
+	echo 3 | gmx trjconv -f traj_comp.xtc -s -pbc mol -o traj_tempo.xtc
+
+traj_last2ns.xtc:
+	echo 0 | gmx trjconv -f traj_comp.xtc -o traj_last2ns.xtc -b 98000 -s -pbc res
+
+traj_dt10.xtc:
+	echo 0 | gmx trjconv -f traj_comp.xtc -dt 10 -o traj_dt10.xtc -s -pbc res
+
+traj_filter_lowpass200.xtc:
+	gmx filter -f traj_comp.xtc -s -ol traj_filter_tmp.xtc -nf 200
+	echo 0 | gmx trjconv -f traj_filter_tmp.xtc -o traj_filter_lowpass200.xtc -s -pbc res
+	rm -f traj_filter_tmp.xtc
+
+angdist.xvg:
+	gmx angle -type dihedral -f traj_comp.xtc -n angle_C2-N-Zn-N.ndx -binwidth 1
+
+clean:
+	-@rm -f $(GROMPP_FILES) $(MDRUN_FILES)
+	-@rm -f index.ndx traj_tempo.xtc traj_vel_tempo.trr traj_dt10.xtc traj_filter_lowpass200.xtc traj_filter_tmp.xtc
+	-@rm -f \#*\#
+	-@rm -f energy.xvg gmx_grompp.log
+	-@rm -f traj_vel_tempo.trr.gz traj_last2ns.xtc angdist.xvg
+
+maintainer-clean: clean
+	-@rm -f resout.gro

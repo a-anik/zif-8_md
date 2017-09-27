@@ -1,0 +1,30 @@
+.PHONY: clean all
+
+all: TMP.O1_grid.cube TMP.C4_grid.cube CO2.C_grid.cube CO2.O_grid.cube
+
+index_spatial.ndx: confout.gro
+	echo "r TMP & a O1\n r TMP & a C4\n r CO2 & a C\n r CO2 & a O?\n q" | gmx make_ndx -f confout.gro -o index_spatial.ndx
+
+TMP.O1_grid.cube: traj.xtc topol.tpr index_spatial.ndx
+	echo "5 2" | gmx spatial -s -f -n index_spatial.ndx -nodiv -nocut -ign 0 | tee TMP.O1_spatial.log
+	mv grid.cube TMP.O1_grid.cube
+
+TMP.C4_grid.cube: traj.xtc topol.tpr index_spatial.ndx
+	echo "6 2" | gmx spatial -s -f -n index_spatial.ndx -nodiv -nocut -ign 0 | tee TMP.C4_spatial.log
+	mv grid.cube TMP.C4_grid.cube
+
+CO2.C_grid.cube: traj.xtc topol.tpr index_spatial.ndx
+	echo "7 2" | gmx spatial -s -f -n index_spatial.ndx -nodiv -nocut -ign 0 | tee CO2.C_spatial.log
+	mv grid.cube CO2.C_grid.cube
+
+CO2.O_grid.cube: traj.xtc topol.tpr index_spatial.ndx
+	echo "8 2" | gmx spatial -s -f -n index_spatial.ndx -nodiv -nocut -ign 0 | tee CO2.O_spatial.log
+	mv grid.cube CO2.O_grid.cube
+
+clean:
+	-@rm -f TMP.O1_grid.cube TMP.O1_spatial.log
+	-@rm -f TMP.C?_grid.cube TMP.C?_spatial.log
+	-@rm -f CO2.C_grid.cube CO2.C_spatial.log
+	-@rm -f CO2.O_grid.cube CO2.O_spatial.log
+	-@rm -f index_spatial.ndx
+	-@rm -f \#*\#

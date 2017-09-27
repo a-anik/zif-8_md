@@ -1,0 +1,3 @@
+GAS = CO2
+NMOL = 24
+#MOLS_PER_UC = 3    # NMOL / (2x2x2)
