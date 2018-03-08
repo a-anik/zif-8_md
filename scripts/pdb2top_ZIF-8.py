@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import warnings
 import MDAnalysis as mda
 import MDAnalysis.core.topologyobjects as topobj
 import MDAnalysis.topology.core as topcore
@@ -163,9 +164,13 @@ def print_impropers(u):
 
 if __name__ == '__main__':
 
+    tested_MDAnalysis_version = '0.14.0'
     parser = argparse.ArgumentParser(description='Generates GROMACS topology include file from ZIF-8 PDB structure file.')
     parser.add_argument('fname', default='conf.pdb', metavar='conf.pdb', nargs='?', help='ZIF-8 PDB file')
     args = parser.parse_args()
+
+    if mda.version.__version__ != tested_MDAnalysis_version:
+        warnings.warn("This scripts was only tested with MDAnalysis version {}.".format(tested_MDAnalysis_version))
 
     u = build_zif8_top(args.fname)
 
