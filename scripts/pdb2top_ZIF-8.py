@@ -30,12 +30,6 @@ def find_impropers_by_type(u, t):
     return tuple(dihedrals_found)
 
 
-def same_improper_types(x, y):
-    """Compare types of two improper angles.
-       Central pair of atoms and end pair of atoms should be of the same type"""
-    return (set((x[0], x[3])) == set((y[0], y[3]))) and (set((x[1], x[2])) == set((y[1], y[2])))
-
-
 def build_zif8_top(fname):
     """Build periodic ZIF-8 topology from PDB file."""
 
