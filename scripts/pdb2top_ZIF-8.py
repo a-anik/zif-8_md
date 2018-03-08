@@ -3,8 +3,8 @@
 import argparse
 import warnings
 import MDAnalysis as mda
-import MDAnalysis.core.topologyobjects as topobj
 import MDAnalysis.topology.core as topcore
+from MDAnalysis.core.topologyattrs import Bonds, Angles, Dihedrals, Impropers
 
 
 def find_impropers_by_type(u, t):
@@ -42,35 +42,28 @@ def build_zif8_top(fname, guess_all_impropers=False):
     # guess bonds using periodic box
     rvdw = {'Zn': 1.4, 'N': 1.5, 'C1': 1.4, 'C2': 1.4, 'C3': 1.4, 'H2': 1.0, 'H3': 1.0}
     all_bonds = topcore.guess_bonds(u.atoms, u.atoms.positions, vdwradii=rvdw, box=u.dimensions)
-    tgb = topobj.TopologyGroup.from_indices(all_bonds, u.atoms, bondclass=topobj.Bond, guessed=False)
-    u.bonds = tgb
+    u.add_TopologyAttr(Bonds(all_bonds))
 
     # guess angles
     all_angles = topcore.guess_angles(u.atoms.bonds)
-    tga = topobj.TopologyGroup.from_indices(all_angles, u.atoms, bondclass=topobj.Angle, guessed=True)
-    u.angles = tga
+    u.add_TopologyAttr(Angles(all_angles))
 
     # guess dihedrals
     all_dihedrals = topcore.guess_dihedrals(u.atoms.angles)
-    tgd = topobj.TopologyGroup.from_indices(all_dihedrals, u.atoms, bondclass=topobj.Dihedral, guessed=True)
-    u.dihedrals = tgd
+    u.add_TopologyAttr(Dihedrals(all_dihedrals))
 
     # guess impropers
     if guess_all_impropers:
-        all_impropers = topcore.guess_improper_dihedrals(u.atoms.angles)
-        tgi = topobj.TopologyGroup.from_indices(all_impropers, u.atoms, bondclass=topobj.ImproperDihedral, guessed=True)
+        impropers = topcore.guess_improper_dihedrals(u.atoms.angles)
     else:
-        # MDanalysis does not guarantee the order of atoms in the result of guess_improper_dihedrals(),
+        # MDanalysis does not guarantee the order of atoms in the result of guess_improper_dihedrals(), 
         # so by now we use custom search of predefined dihedral types
         # select Zheng's impropers
         ia1 = find_impropers_by_type(u, ('N', 'C3', 'C1', 'N'))
         ia2 = find_impropers_by_type(u, ('C2', 'H2', 'C2', 'N'))
         ia3 = find_impropers_by_type(u, ('C2', 'Zn', 'N', 'C1'))
-        tgi1 = topobj.TopologyGroup.from_indices(ia1, u.atoms, bondclass=topobj.Dihedral)
-        tgi2 = topobj.TopologyGroup.from_indices(ia2, u.atoms, bondclass=topobj.Dihedral)
-        tgi3 = topobj.TopologyGroup.from_indices(ia3, u.atoms, bondclass=topobj.Dihedral)
-        tgi = tgi1 + tgi2 + tgi3
-    u.impropers = tgi
+        impropers = ia1 + ia2 + ia3
+    u.add_TopologyAttr(Impropers(impropers))
 
     return u
 
@@ -94,7 +87,7 @@ def print_atoms(u):
     print '[ atoms ]'
     print ';   nr       type  resnr residue  atom   cgnr     charge       mass'
     for a in u.atoms:
-        print "%6d %10s %5d %6s %6s %7d" % (a.serial, a.name + '_zif8', a.resnum, 'ZIF', a.name, a.serial)
+        print "%6d %10s %5d %6s %6s %7d" % (a.id, a.name + '_zif8', a.resnum, 'ZIF', a.name, a.id)
     print
 
 
@@ -105,7 +98,7 @@ def print_bonds(u):
     print ';  ai    aj  funct    b0        kb'
     for b in u.bonds:
         btype = 'gb_zif8_' + canon_bondstr(b.type)
-        print "%5s %5s      %-20s ; %-4s %-4s" % (b[0].serial, b[1].serial, btype, b[0].name, b[1].name)
+        print "%5s %5s      %-20s ; %-4s %-4s" % (b[0].id, b[1].id, btype, b[0].name, b[1].name)
     print
 
 
@@ -130,7 +123,7 @@ def print_angles(u):
     print ';  ai    aj    ak   funct      phi0      fc'
     for a in u.angles:
         atype = 'ga_zif8_' + canon_bondstr(a.type)
-        print "%5s %5s %5s       %-20s ; %-4s %-4s %-4s" % (a[0].serial, a[1].serial, a[2].serial, atype, a[0].name, a[1].name, a[2].name)
+        print "%5s %5s %5s       %-20s ; %-4s %-4s %-4s" % (a[0].id, a[1].id, a[2].id, atype, a[0].name, a[1].name, a[2].name)
     print
 
 
@@ -141,7 +134,7 @@ def print_dihedrals(u):
     print ';  ai    aj    ak    al   funct   phi0        fc    mult'
     for d in u.dihedrals:
         dtype = 'gd_zif8_' + canon_bondstr(d.type)
-        print "%5s %5s %5s %5s     %-20s ; %-3s %-3s %-3s %-3s" % (d[0].serial, d[1].serial, d[2].serial, d[3].serial,
+        print "%5s %5s %5s %5s     %-20s ; %-3s %-3s %-3s %-3s" % (d[0].id, d[1].id, d[2].id, d[3].id,
                                                                    dtype, d[0].name, d[1].name, d[2].name, d[3].name)
     print
 
@@ -153,14 +146,14 @@ def print_impropers(u):
     print ';  ai    aj    ak    al   funct    phi0         fc'
     for d in u.impropers:
         dtype = 'gi_zif8_' + canon_bondstr(d.type)
-        print "%5s %5s %5s %5s    %-20s ; %-3s %-3s %-3s %-3s" % (d[0].serial, d[1].serial, d[2].serial, d[3].serial,
+        print "%5s %5s %5s %5s    %-20s ; %-3s %-3s %-3s %-3s" % (d[0].id, d[1].id, d[2].id, d[3].id,
                                                                   dtype, d[0].name, d[1].name, d[2].name, d[3].name)
     print
 
 
 if __name__ == '__main__':
 
-    tested_MDAnalysis_version = '0.14.0'
+    tested_MDAnalysis_version = '0.17.0'
     parser = argparse.ArgumentParser(description='Generates GROMACS topology include file from ZIF-8 PDB structure file.')
     parser.add_argument('fname', default='conf.pdb', metavar='conf.pdb', nargs='?', help='ZIF-8 PDB file')
     parser.add_argument('-a', '--all-impropers', dest='all_impropers', action='store_true', help='guess all improper dihedrals')
