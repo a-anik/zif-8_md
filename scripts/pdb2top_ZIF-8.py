@@ -33,8 +33,8 @@ def find_impropers_by_type(u, t):
 def build_zif8_top(fname):
     """Build periodic ZIF-8 topology from PDB file."""
 
-    u = mda.Universe(fname)
     mda.core.flags['use_pbc'] = True
+    u = mda.Universe(fname, guess_bonds=False)
 
     # set atom types from PDB atom names for proper bond typing
     u.atoms.types = u.atoms.names
