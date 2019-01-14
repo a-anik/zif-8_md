@@ -11,7 +11,7 @@ topol.tpr: grompp.mdp topol.top tempo.pdb
 	gmx grompp -c tempo.pdb
 
 index.ndx: conf.gro
-	echo "a 3 1 5\n keep 3\n name 0 TEMPO_C3-N1-C5\n a 1 11\n name 1 TEMPO_N1-O1\n q\n" |  gmx make_ndx -f conf.gro -o index.ndx
+	printf 'a 3 1 5\n keep 3\n name 0 TEMPO_C3-N1-C5\n a 1 11\n name 1 TEMPO_N1-O1\n q\n' |  gmx make_ndx -f conf.gro -o index.ndx
 
 rotacf.xvg: index.ndx
 	echo 0 | gmx rotacf -P 2 -f -s -n -fitfn exp_exp -acflen 1000 -o rotacf.xvg | tee rotacf.log

@@ -16,7 +16,7 @@ top: topol.tpr
 
 
 index.ndx: conf.gro
-	echo "q \n" |  gmx make_ndx -f conf.gro 
+	printf 'q \n' | gmx make_ndx -f conf.gro 
 
 
 prune: traj_vel_tempo.trr traj_tempo.xtc traj_dt10.xtc traj_last2ns.xtc traj_filter_lowpass200.xtc resout.gro

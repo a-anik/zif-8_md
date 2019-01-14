@@ -19,7 +19,7 @@ confout.gro: 1_zif_with_tempo.gro $(GAS)_centered.pdb
 	gmx insert-molecules -f start_conf.gro -ci TEMPO-vsLP_centered.pdb -ip positions.dat -o 1_zif_with_tempo.gro -seed 2 -nmol 1 -try 1000 -scale 1.1 -rot xyz 2>&1 | tee insert_tempo.log
 
 index_energrps.ndx: confout.gro
-	echo "!2\n 4\n name 6 GAS\n q\n" | gmx make_ndx -f confout.gro -o index_energrps.ndx
+	printf '!2\n 4\n name 6 GAS\n q\n' | gmx make_ndx -f confout.gro -o index_energrps.ndx
 
 clean:
 	-@rm -f $(GROMPP_FILES) $(MDRUN_FILES)
